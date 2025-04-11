@@ -3,11 +3,14 @@ import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PlayerSelectionModal from './PlayerSelectionModal';
 import ColorSelectionModal from './ColorSelectionModal';
+import AmountSelectionModal from './AmountSelectionModal';
 
 const HomeScreen = ({ navigation }) => {
   const [isPlayerSelectionVisible, setPlayerSelectionVisible] = useState(false);
   const [isColorSelectionVisible, setColorSelectionVisible] = useState(false);
+  const [isAmountSelectionVisible, setAmountSelectionVisible] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState(2);
+  const [selectedColor, setSelectedColor] = useState(null);
 
   const handlePlayerSelection = (numberOfPlayers) => {
     setSelectedPlayers(numberOfPlayers);
@@ -15,11 +18,18 @@ const HomeScreen = ({ navigation }) => {
     setColorSelectionVisible(true);
   };
 
-  const handleColorSelection = (selectedColor) => {
+  const handleColorSelection = (color) => {
+    setSelectedColor(color);
     setColorSelectionVisible(false);
-    navigation.navigate('Computer', { 
+    setAmountSelectionVisible(true);
+  };
+
+  const handleAmountSelection = (amount) => {
+    setAmountSelectionVisible(false);
+    navigation.navigate('Computer', {
       numberOfPlayers: selectedPlayers,
-      playerColor: selectedColor 
+      playerColor: selectedColor,
+      startingAmount: amount
     });
   };
 
@@ -76,6 +86,15 @@ const HomeScreen = ({ navigation }) => {
           }}
           onPlay={handleColorSelection}
           numberOfPlayers={selectedPlayers}
+        />
+
+        <AmountSelectionModal
+          visible={isAmountSelectionVisible}
+          onClose={() => {
+            setAmountSelectionVisible(false);
+            setColorSelectionVisible(true);
+          }}
+          onNext={handleAmountSelection}
         />
       </View>
     </View>

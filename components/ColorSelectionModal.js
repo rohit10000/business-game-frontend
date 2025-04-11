@@ -68,7 +68,7 @@ const ColorSelectionModal = ({ visible, onClose, onPlay, numberOfPlayers }) => {
                 style={styles.playButton}
                 onPress={() => onPlay(selectedColor)}
               >
-                <Text style={styles.playButtonText}>PLAY</Text>
+                <Text style={styles.playButtonText}>NEXT</Text>
               </TouchableOpacity>
             </View>
           </View>
