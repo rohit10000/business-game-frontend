@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import PlayerSelectionModal from './PlayerSelectionModal';
+import ColorSelectionModal from './ColorSelectionModal';
 
 const HomeScreen = ({ navigation }) => {
+  const [isPlayerSelectionVisible, setPlayerSelectionVisible] = useState(false);
+  const [isColorSelectionVisible, setColorSelectionVisible] = useState(false);
+  const [selectedPlayers, setSelectedPlayers] = useState(2);
+
+  const handlePlayerSelection = (numberOfPlayers) => {
+    setSelectedPlayers(numberOfPlayers);
+    setPlayerSelectionVisible(false);
+    setColorSelectionVisible(true);
+  };
+
+  const handleColorSelection = (selectedColor) => {
+    setColorSelectionVisible(false);
+    navigation.navigate('Computer', { 
+      numberOfPlayers: selectedPlayers,
+      playerColor: selectedColor 
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -22,7 +42,7 @@ const HomeScreen = ({ navigation }) => {
 
         <TouchableOpacity 
           style={styles.gameOption}
-          onPress={() => navigation.navigate('Computer')}
+          onPress={() => setPlayerSelectionVisible(true)}
         >
           <Image
             source={require('../assets/vs-computer.png')}
@@ -41,6 +61,22 @@ const HomeScreen = ({ navigation }) => {
             resizeMode="contain"
           />
         </TouchableOpacity>
+
+        <PlayerSelectionModal
+          visible={isPlayerSelectionVisible}
+          onClose={() => setPlayerSelectionVisible(false)}
+          onNext={handlePlayerSelection}
+        />
+
+        <ColorSelectionModal
+          visible={isColorSelectionVisible}
+          onClose={() => {
+            setColorSelectionVisible(false);
+            setPlayerSelectionVisible(true);
+          }}
+          onPlay={handleColorSelection}
+          numberOfPlayers={selectedPlayers}
+        />
       </View>
     </View>
   );
