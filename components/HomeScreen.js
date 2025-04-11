@@ -1,122 +1,95 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function HomeScreen({ navigation }) {
+const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* Profile and Coins Section */}
       <View style={styles.header}>
-        <View style={styles.profile}>
-          <Image
-            source={require('../assets/business-india-board.jpeg')}
-            style={styles.profileImage}
-          />
-          <Text style={styles.guestText}>Guest1234</Text>
-        </View>
-        <View style={styles.coins}>
-          <Image
-            source={require('../assets/business-india-board.jpeg')}
-            style={styles.coinIcon}
-          />
-          <Text style={styles.coinText}>0</Text>
-        </View>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="person-circle-outline" size={40} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="settings-outline" size={40} color="white" />
+        </TouchableOpacity>
       </View>
-
-      {/* Ludo King Logo */}
-      <View style={styles.logoContainer}>
+      <View style={styles.content}>
         <Image
-          source={require('../assets/business-india-board.jpeg')}
-          style={styles.logo}
+          source={require('../assets/indian-business.png')}
+          style={styles.businessImage}
+          resizeMode="contain"
         />
-      </View>
 
-      {/* Game Mode Buttons */}
-      <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          style={styles.button}
-          onPress={() => navigation.navigate('OnlineMultiplayer')}
+          style={styles.gameOption}
+          onPress={() => navigation.navigate('Computer')}
         >
-          <Text style={styles.buttonText}>ONLINE MULTIPLAYER</Text>
+          <Image
+            source={require('../assets/vs-computer.png')}
+            style={styles.optionImage}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.button}
-          onPress={() => navigation.navigate('Computer')}
+          style={styles.gameOption}
+          onPress={() => navigation.navigate('OnlineMultiplayer')}
         >
-          <Text style={styles.buttonText}>COMPUTER</Text>
+          <Image
+            source={require('../assets/online-multiplayer.png')}
+            style={styles.optionImage}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a75ff',
+    backgroundColor: '#1a4275', // Deep blue background color
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
   },
-  profile: {
-    flexDirection: 'row',
+  iconButton: {
+    padding: 5,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  guestText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  coins: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffd700',
     padding: 10,
-    borderRadius: 20,
+    gap: 15,
   },
-  coinIcon: {
-    width: 30,
-    height: 30,
-    marginRight: 5,
+  gameOption: {
+    width: '85%',
+    aspectRatio: 2,
+    borderRadius: 25,
+    overflow: 'hidden',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    backgroundColor: 'rgba(26, 66, 117, 0.95)',
+    marginVertical: 5,
   },
-  coinText: {
-    color: 'black',
-    fontSize: 18,
-    fontWeight: 'bold',
+  businessImage: {
+    width: '100%',
+    height: '40%',
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginVertical: 50,
+  optionImage: {
+    width: '100%',
+    height: '100%',
   },
-  logo: {
-    width: 250,
-    height: 150,
-    resizeMode: 'contain',
-  },
-  buttonContainer: {
-    padding: 20,
-    gap: 20,
-  },
-  button: {
-    backgroundColor: '#ffa500',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#8b4513',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-}); 
+});
+
+export default HomeScreen; 
