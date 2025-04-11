@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import BlurOverlay from './BlurOverlay';
 
 const ColorSelectionModal = ({ visible, onClose, onPlay, numberOfPlayers }) => {
   const [selectedColor, setSelectedColor] = useState('blue');
@@ -13,71 +14,73 @@ const ColorSelectionModal = ({ visible, onClose, onPlay, numberOfPlayers }) => {
   ];
 
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.title}>SELECT YOUR COLOR</Text>
-          
-          <View style={styles.colorGrid}>
-            <View style={styles.markerRow}>
-              {colors.map((color) => (
-                <View key={`marker-${color.id}`} style={styles.markerContainer}>
-                  <View style={[styles.marker, { backgroundColor: 'white' }]}>
-                    <View style={[styles.markerDot, { backgroundColor: color.color }]} />
+    <>
+      <BlurOverlay visible={visible} />
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.title}>SELECT YOUR COLOR</Text>
+            
+            <View style={styles.colorGrid}>
+              <View style={styles.markerRow}>
+                {colors.map((color) => (
+                  <View key={`marker-${color.id}`} style={styles.markerContainer}>
+                    <View style={[styles.marker, { backgroundColor: 'white' }]}>
+                      <View style={[styles.markerDot, { backgroundColor: color.color }]} />
+                    </View>
                   </View>
-                </View>
-              ))}
-            </View>
+                ))}
+              </View>
 
-            <View style={styles.selectionRow}>
-              {colors.map((color) => (
-                <TouchableOpacity
-                  key={`select-${color.id}`}
-                  style={styles.colorContainer}
-                  onPress={() => setSelectedColor(color.id)}
-                >
-                  <View 
-                    style={[
-                      styles.colorCircle,
-                      { borderColor: color.color },
-                      selectedColor === color.id && { backgroundColor: color.color }
-                    ]}
+              <View style={styles.selectionRow}>
+                {colors.map((color) => (
+                  <TouchableOpacity
+                    key={`select-${color.id}`}
+                    style={styles.colorContainer}
+                    onPress={() => setSelectedColor(color.id)}
                   >
-                    {selectedColor === color.id && (
-                      <Ionicons name="checkmark" size={24} color="white" />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ))}
+                    <View 
+                      style={[
+                        styles.colorCircle,
+                        { borderColor: color.color },
+                        selectedColor === color.id && { backgroundColor: color.color }
+                      ]}
+                    >
+                      {selectedColor === color.id && (
+                        <Ionicons name="checkmark" size={24} color="white" />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.backButton} onPress={onClose}>
-              <Ionicons name="arrow-back" size={24} color="#FFD700" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.playButton}
-              onPress={() => onPlay(selectedColor)}
-            >
-              <Text style={styles.playButtonText}>PLAY</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.backButton} onPress={onClose}>
+                <Ionicons name="arrow-back" size={24} color="#FFD700" />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.playButton}
+                onPress={() => onPlay(selectedColor)}
+              >
+                <Text style={styles.playButtonText}>PLAY</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },

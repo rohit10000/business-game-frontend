@@ -1,68 +1,71 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import BlurOverlay from './BlurOverlay';
 
 const PlayerSelectionModal = ({ visible, onClose, onNext }) => {
   const [selectedPlayers, setSelectedPlayers] = useState(2);
 
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.title}>SELECT PLAYERS</Text>
-          
-          <View style={styles.optionsContainer}>
-            <TouchableOpacity 
-              style={styles.option}
-              onPress={() => setSelectedPlayers(2)}
-            >
-              <View style={[styles.circle, selectedPlayers === 2 && styles.selectedCircle]}>
-                {selectedPlayers === 2 && (
-                  <Ionicons name="checkmark" size={24} color="#FFD700" />
-                )}
-              </View>
-              <Text style={styles.optionText}>2 PLAYERS</Text>
-            </TouchableOpacity>
+    <>
+      <BlurOverlay visible={visible} />
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.title}>SELECT PLAYERS</Text>
+            
+            <View style={styles.optionsContainer}>
+              <TouchableOpacity 
+                style={styles.option}
+                onPress={() => setSelectedPlayers(2)}
+              >
+                <View style={[styles.circle, selectedPlayers === 2 && styles.selectedCircle]}>
+                  {selectedPlayers === 2 && (
+                    <Ionicons name="checkmark" size={24} color="#FFD700" />
+                  )}
+                </View>
+                <Text style={styles.optionText}>2 PLAYERS</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.option}
-              onPress={() => setSelectedPlayers(4)}
-            >
-              <View style={[styles.circle, selectedPlayers === 4 && styles.selectedCircle]}>
-                {selectedPlayers === 4 && (
-                  <Ionicons name="checkmark" size={24} color="#FFD700" />
-                )}
-              </View>
-              <Text style={styles.optionText}>4 PLAYERS</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity 
+                style={styles.option}
+                onPress={() => setSelectedPlayers(4)}
+              >
+                <View style={[styles.circle, selectedPlayers === 4 && styles.selectedCircle]}>
+                  {selectedPlayers === 4 && (
+                    <Ionicons name="checkmark" size={24} color="#FFD700" />
+                  )}
+                </View>
+                <Text style={styles.optionText}>4 PLAYERS</Text>
+              </TouchableOpacity>
+            </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.backButton} onPress={onClose}>
-              <Ionicons name="arrow-back" size={24} color="#FFD700" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.nextButton}
-              onPress={() => onNext(selectedPlayers)}
-            >
-              <Text style={styles.nextButtonText}>NEXT</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.backButton} onPress={onClose}>
+                <Ionicons name="arrow-back" size={24} color="#FFD700" />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.nextButton}
+                onPress={() => onNext(selectedPlayers)}
+              >
+                <Text style={styles.nextButtonText}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
