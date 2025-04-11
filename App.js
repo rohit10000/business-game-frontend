@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import LandingScreen from './components/LandingScreen';
 import HomeScreen from './components/HomeScreen';
 import OnlineMultiplayerScreen from './components/OnlineMultiplayerScreen';
 import ComputerScreen from './components/ComputerScreen';
@@ -12,7 +13,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator 
-        initialRouteName="Home"
+        initialRouteName="Landing"
         screenOptions={{
           headerStyle: {
             backgroundColor: '#1a75ff',
@@ -23,6 +24,11 @@ export default function App() {
           },
         }}
       >
+        <Stack.Screen 
+          name="Landing" 
+          component={LandingScreen} 
+          options={{ headerShown: false }}
+        />
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 
