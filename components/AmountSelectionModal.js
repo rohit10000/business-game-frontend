@@ -21,7 +21,6 @@ const AmountSelectionModal = ({ visible, onClose, onNext }) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.title}>SELECT PER{'\n'}PLAYER AMOUNT</Text>
-            
             <View style={styles.dropdownContainer}>
               <TouchableOpacity 
                 style={styles.selectedAmount}
@@ -64,7 +63,7 @@ const AmountSelectionModal = ({ visible, onClose, onNext }) => {
                 style={styles.nextButton}
                 onPress={() => onNext(selectedAmount)}
               >
-                <Text style={styles.nextButtonText}>NEXT</Text>
+                <Text style={styles.nextButtonText}>PLAY</Text>
               </TouchableOpacity>
             </View>
           </View>
