@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Dimensions } from 'react-native';
+import WaitingScreen from './WaitingScreen';
+import { useNavigation } from '@react-navigation/native';
+import wsService from '../utils/WebSocketService';
 
 const { width } = Dimensions.get('window');
 
 export default function OnlineMultiplayerScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [roomCode, setRoomCode] = useState('');
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [waiting, setWaiting] = useState(false);
+  const [wsMessage, setWsMessage] = useState('');
+  const unsubscribeRef = useRef(null);
+
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: waiting ? 'Waiting Screen' : 'Online Multiplayer',
+    });
+  }, [navigation, waiting]);
+
+  useEffect(() => {
+    // Clean up WebSocket and listeners on unmount or when leaving waiting
+    return () => {
+      wsService.close();
+      if (unsubscribeRef.current) unsubscribeRef.current();
+    };
+  }, [waiting]);
 
   const handleCreateRoom = () => {
     // TODO: Implement create room functionality
@@ -22,10 +45,26 @@ export default function OnlineMultiplayerScreen() {
   };
 
   const handleModalEnter = () => {
-    // TODO: Validate and use roomCode
-    setIsModalVisible(false);
-    setRoomCode('');
-    console.log('Enter pressed with code:', roomCode);
+    // Try to connect to WebSocket using wsService
+    wsService.connect(
+      'ws://10.11.118.11:8025/app',
+      () => {
+        wsService.send({ type: 'join', code: roomCode });
+        setIsModalVisible(false);
+        setRoomCode('');
+        setWaiting(true);
+        // Subscribe to messages
+        unsubscribeRef.current = wsService.subscribe((msg) => setWsMessage(msg));
+      },
+      () => {
+        setIsModalVisible(false);
+        setErrorModalVisible(true);
+      },
+      () => {
+        setIsModalVisible(false);
+        setErrorModalVisible(true);
+      }
+    );
   };
 
   const handlePlayRandom = () => {
@@ -33,11 +72,16 @@ export default function OnlineMultiplayerScreen() {
     console.log('Play Random pressed');
   };
 
+  // Waiting screen UI
+  if (waiting) {
+    return <WaitingScreen message={wsMessage} />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          onPress={handleCreateRoom} 
+          onPress={handleModalEnter} 
           style={styles.button}
           activeOpacity={0.7}
         >
@@ -61,6 +105,7 @@ export default function OnlineMultiplayerScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Join Room Modal */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -89,13 +134,35 @@ export default function OnlineMultiplayerScreen() {
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, styles.enterButton]}
+                style={[styles.modalButton, styles.enterButton, roomCode.length !== 6 && { opacity: 0.5 }]}
                 onPress={handleModalEnter}
                 activeOpacity={0.8}
+                disabled={roomCode.length !== 6}
               >
                 <Text style={styles.modalButtonText}>Enter</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Error Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={errorModalVisible}
+        onRequestClose={() => setErrorModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.errorModalBox}>
+            <Text style={styles.errorModalText}>Unable to join</Text>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.enterButton, { marginTop: 24 }]}
+              onPress={() => setErrorModalVisible(false)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.modalButtonText}>Okay</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -201,5 +268,24 @@ const styles = StyleSheet.create({
     color: '#f7e6b7',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  errorModalBox: {
+    backgroundColor: '#231a4a',
+    borderRadius: 28,
+    padding: 32,
+    width: width * 0.75,
+    maxWidth: 340,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+  },
+  errorModalText: {
+    color: '#f7e6b7',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 12,
   },
 }); 
