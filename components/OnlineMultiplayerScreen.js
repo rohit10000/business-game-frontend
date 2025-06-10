@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import WaitingScreen from './WaitingScreen';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import wsService from '../utils/WebSocketService';
 import JoinRoomModal from './utils/modals/JoinRoomModal';
 import ErrorModal from './utils/modals/ErrorModal';
@@ -28,6 +28,7 @@ export default function OnlineMultiplayerScreen() {
   });
   const unsubscribeRef = useRef(null);
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,12 +37,18 @@ export default function OnlineMultiplayerScreen() {
   }, [navigation, state.waiting]);
 
   useEffect(() => {
-    // Clean up WebSocket and listeners on unmount or when leaving waiting
+    // Only clean up when leaving the screen completely
     return () => {
-      wsService.disconnect();
-      if (unsubscribeRef.current) unsubscribeRef.current();
+      if (!isFocused) {
+        console.log('Leaving OnlineMultiplayerScreen, cleaning up WebSocket');
+        wsService.disconnect();
+        if (unsubscribeRef.current) {
+          unsubscribeRef.current();
+          unsubscribeRef.current = null;
+        }
+      }
     };
-  }, [state.waiting]);
+  }, [isFocused]);
 
   const handleLoginSuccess = (userData) => {
     setState(prev => ({ ...prev, showLoginModal: false }));
