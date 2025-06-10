@@ -1,33 +1,28 @@
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
-import { WS_SERVER_URL, WS_TOPIC_PUBLIC, WS_APP_PREFIX, WS_CHAT_SEND, WS_CHAT_ADD_USER } from '../config/server';
+import { WS_SERVER_URL, WS_APP_PREFIX, WS_CHAT_SEND, WS_CHAT_ADD_USER } from '../config/server';
 
 class WebSocketService {
   constructor() {
     this.stompClient = null;
-    this.listeners = [];
     this.connected = false;
+    this.listeners = [];
   }
 
   connect(username, code, onConnect, onError, onClose) {
+    console.log('Connecting to WebSocket:', WS_SERVER_URL);
     const socket = new SockJS(WS_SERVER_URL);
     this.stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
+        console.log('WebSocket connected successfully');
         this.connected = true;
         // Subscribe to public topic
-        this.stompClient.subscribe(WS_TOPIC_PUBLIC, (message) => {
+        this.stompClient.subscribe("/topic/room." + code, (message) => {
           const receivedMessage = JSON.parse(message.body);
+          console.log('Received message:', receivedMessage);
           this.listeners.forEach(callback => callback(receivedMessage));
         });
-
-        // Send add user message
-        this.sendMessage({
-          type: 'JOIN',
-          from: username,
-          code: code,
-          text: `${username} joined!`
-        }, WS_CHAT_ADD_USER);
 
         if (onConnect) onConnect();
       },
@@ -36,6 +31,7 @@ class WebSocketService {
         if (onError) onError(frame);
       },
       onWebSocketClose: () => {
+        console.log('WebSocket connection closed');
         this.connected = false;
         if (onClose) onClose();
       }
@@ -46,15 +42,19 @@ class WebSocketService {
 
   sendMessage(message, destination = WS_CHAT_SEND) {
     if (this.connected && this.stompClient) {
+      console.log('Sending message to:', `${WS_APP_PREFIX}${destination}`, message);
       this.stompClient.publish({
         destination: `${WS_APP_PREFIX}${destination}`,
         body: JSON.stringify(message)
       });
+    } else {
+      console.warn('Cannot send message: WebSocket not connected');
     }
   }
 
   disconnect() {
     if (this.stompClient) {
+      console.log('Disconnecting WebSocket');
       this.stompClient.deactivate();
       this.stompClient = null;
       this.connected = false;

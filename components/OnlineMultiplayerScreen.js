@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import wsService from '../utils/WebSocketService';
 import JoinRoomModal from './utils/modals/JoinRoomModal';
 import ErrorModal from './utils/modals/ErrorModal';
+import LoginModal from './utils/modals/LoginModal';
 import { 
   handleCreateRoom,
   handleJoinRoom,
@@ -23,6 +24,7 @@ export default function OnlineMultiplayerScreen() {
     waiting: false,
     wsMessage: '',
     playerName: '',
+    showLoginModal: false,
   });
   const unsubscribeRef = useRef(null);
   const navigation = useNavigation();
@@ -40,6 +42,16 @@ export default function OnlineMultiplayerScreen() {
       if (unsubscribeRef.current) unsubscribeRef.current();
     };
   }, [state.waiting]);
+
+  const handleLoginSuccess = (userData) => {
+    setState(prev => ({ ...prev, showLoginModal: false }));
+    // Retry the last action that required authentication
+    if (state.isModalVisible) {
+      handleModalEnter(setState);
+    } else {
+      handleCreateRoom(setState);
+    }
+  };
 
   // Waiting screen UI
   if (state.waiting) {
@@ -66,7 +78,7 @@ export default function OnlineMultiplayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity 
-          onPress={() => handlePlayRandom()} 
+          onPress={() => handlePlayRandom(setState)} 
           style={styles.button}
           activeOpacity={0.7}
         >
@@ -87,6 +99,12 @@ export default function OnlineMultiplayerScreen() {
       <ErrorModal
         visible={state.errorModalVisible}
         onClose={() => setState(prev => ({ ...prev, errorModalVisible: false }))}
+      />
+
+      <LoginModal
+        visible={state.showLoginModal}
+        onClose={() => setState(prev => ({ ...prev, showLoginModal: false }))}
+        onLoginSuccess={handleLoginSuccess}
       />
     </View>
   );

@@ -1,30 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PlayerSelectionModal from './PlayerSelectionModal';
 import ColorSelectionModal from './ColorSelectionModal';
 import AmountSelectionModal from './AmountSelectionModal';
+import LoginModal from './utils/modals/LoginModal';
+import { getUser, isAuthenticated, clearAuthTokens } from '../utils/auth';
 
 const HomeScreen = ({ navigation }) => {
   const [isPlayerSelectionVisible, setPlayerSelectionVisible] = useState(false);
   const [isColorSelectionVisible, setColorSelectionVisible] = useState(false);
   const [isAmountSelectionVisible, setAmountSelectionVisible] = useState(false);
+  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState(2);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    console.log('HomeScreen mounted');
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    console.log('Checking auth status...');
+    const isLoggedIn = await isAuthenticated();
+    console.log('Is logged in:', isLoggedIn);
+    if (isLoggedIn) {
+      const userData = await getUser();
+      console.log('User data:', userData);
+      setUser(userData);
+    }
+  };
+
+  const handleLogout = async () => {
+    console.log('Logging out...');
+    await clearAuthTokens();
+    setUser(null);
+    console.log('Logout complete');
+  };
 
   const handlePlayerSelection = (numberOfPlayers) => {
+    console.log('Selected players:', numberOfPlayers);
     setSelectedPlayers(numberOfPlayers);
     setPlayerSelectionVisible(false);
     setColorSelectionVisible(true);
   };
 
   const handleColorSelection = (color) => {
+    console.log('Selected color:', color);
     setSelectedColor(color);
     setColorSelectionVisible(false);
     setAmountSelectionVisible(true);
   };
 
   const handleAmountSelection = (amount) => {
+    console.log('Selected amount:', amount);
     setAmountSelectionVisible(false);
     navigation.navigate('Computer', {
       numberOfPlayers: selectedPlayers,
@@ -33,11 +63,32 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
+  const handleLoginSuccess = (userData) => {
+    console.log('Login successful:', userData);
+    setUser(userData);
+  };
+
+  const handleLoginPress = () => {
+    debugger;
+    if (user) {
+      handleLogout();
+    } else {
+      setLoginModalVisible(true);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="person-circle-outline" size={40} color="white" />
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={handleLoginPress}
+        >
+          <Ionicons 
+            name={user ? "person-circle" : "person-circle-outline"} 
+            size={40} 
+            color="white" 
+          />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton}>
           <Ionicons name="settings-outline" size={40} color="white" />
@@ -95,6 +146,12 @@ const HomeScreen = ({ navigation }) => {
             setColorSelectionVisible(true);
           }}
           onNext={handleAmountSelection}
+        />
+
+        <LoginModal
+          visible={isLoginModalVisible}
+          onClose={() => setLoginModalVisible(false)}
+          onLoginSuccess={handleLoginSuccess}
         />
       </View>
     </View>
