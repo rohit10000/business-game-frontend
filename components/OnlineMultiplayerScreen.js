@@ -37,17 +37,17 @@ export default function OnlineMultiplayerScreen() {
   }, [navigation, state.waiting]);
 
   useEffect(() => {
-    // Only clean up when leaving the screen completely
-    return () => {
-      if (!isFocused) {
-        console.log('Leaving OnlineMultiplayerScreen, cleaning up WebSocket');
+    // Close all websocket connections when landing on OnlineMultiplayerScreen
+    if (isFocused) {
+      console.log('Landing on OnlineMultiplayerScreen, cleaning up existing WebSocket connections');
+      if (wsService.isConnected()) {
         wsService.disconnect();
-        if (unsubscribeRef.current) {
-          unsubscribeRef.current();
-          unsubscribeRef.current = null;
-        }
       }
-    };
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+        unsubscribeRef.current = null;
+      }
+    }
   }, [isFocused]);
 
   const handleLoginSuccess = (userData) => {

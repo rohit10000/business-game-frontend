@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import PlayerSelectionModal from './PlayerSelectionModal';
 import ColorSelectionModal from './ColorSelectionModal';
 import AmountSelectionModal from './AmountSelectionModal';
 import LoginModal from './utils/modals/LoginModal';
 import { getUser, isAuthenticated, clearAuthTokens } from '../utils/auth';
+import wsService from '../utils/WebSocketService';
 
 const HomeScreen = ({ navigation }) => {
   const [isPlayerSelectionVisible, setPlayerSelectionVisible] = useState(false);
@@ -15,11 +17,22 @@ const HomeScreen = ({ navigation }) => {
   const [selectedPlayers, setSelectedPlayers] = useState(2);
   const [selectedColor, setSelectedColor] = useState(null);
   const [user, setUser] = useState(null);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     console.log('HomeScreen mounted');
     checkAuthStatus();
   }, []);
+
+  useEffect(() => {
+    // Clean up WebSocket connections when HomeScreen is focused
+    if (isFocused) {
+      console.log('HomeScreen focused - cleaning up WebSocket connections');
+      if (wsService.isConnected()) {
+        wsService.disconnect();
+      }
+    }
+  }, [isFocused]);
 
   const checkAuthStatus = async () => {
     console.log('Checking auth status...');
@@ -34,6 +47,10 @@ const HomeScreen = ({ navigation }) => {
 
   const handleLogout = async () => {
     console.log('Logging out...');
+    // Disconnect WebSocket before clearing tokens
+    if (wsService.isConnected()) {
+      wsService.disconnect();
+    }
     await clearAuthTokens();
     setUser(null);
     console.log('Logout complete');
