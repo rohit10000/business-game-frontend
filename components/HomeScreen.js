@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import PlayerSelectionModal from './PlayerSelectionModal';
@@ -140,6 +140,13 @@ const HomeScreen = ({ navigation }) => {
           />
         </TouchableOpacity>
 
+        <TouchableOpacity 
+          style={styles.demoButton}
+          onPress={() => navigation.navigate('Game')}
+        >
+          <Text style={styles.demoButtonText}>🎮 Game State Demo</Text>
+        </TouchableOpacity>
+
         <PlayerSelectionModal
           visible={isPlayerSelectionVisible}
           onClose={() => setPlayerSelectionVisible(false)}
@@ -218,6 +225,24 @@ const styles = StyleSheet.create({
   optionImage: {
     width: '100%',
     height: '100%',
+  },
+  demoButton: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginTop: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  demoButtonText: {
+    color: '#1a4275',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

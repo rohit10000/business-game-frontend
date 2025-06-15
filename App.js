@@ -6,45 +6,54 @@ import LandingScreen from './components/LandingScreen';
 import HomeScreen from './components/HomeScreen';
 import OnlineMultiplayerScreen from './components/OnlineMultiplayerScreen';
 import ComputerScreen from './components/ComputerScreen';
+import GameScreen from './components/GameScreen';
+import { GameProvider } from './utils/GameContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Landing"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#1a75ff',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-      >
-        <Stack.Screen 
-          name="Landing" 
-          component={LandingScreen} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="OnlineMultiplayer" 
-          component={OnlineMultiplayerScreen}
-          options={{ title: 'Online Multiplayer' }}
-        />
-        <Stack.Screen 
-          name="Computer" 
-          component={ComputerScreen}
-          options={{ title: 'Computer Mode' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GameProvider>
+      <NavigationContainer>
+        <Stack.Navigator 
+          initialRouteName="Landing"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#1a75ff',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        >
+          <Stack.Screen 
+            name="Landing" 
+            component={LandingScreen} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="OnlineMultiplayer" 
+            component={OnlineMultiplayerScreen}
+            options={{ title: 'Online Multiplayer' }}
+          />
+          <Stack.Screen 
+            name="Computer" 
+            component={ComputerScreen}
+            options={{ title: 'Computer Mode' }}
+          />
+          <Stack.Screen 
+            name="Game" 
+            component={GameScreen}
+            options={{ title: 'Game State Demo' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GameProvider>
   );
 }
