@@ -20,9 +20,7 @@ class WebSocketService {
         // Subscribe to room-specific topic with room code as payload
         console.log('Subscribing to room topic with code:', code);
         this.stompClient.subscribe("/topic/room." + code, (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          console.log('Received message:', receivedMessage);
-          this.listeners.forEach(callback => callback(receivedMessage));
+          this.handleReceivedMessage(message);
         });
         if (onConnect) onConnect();
       },
@@ -51,6 +49,12 @@ class WebSocketService {
     } else {
       console.warn('Cannot send message: WebSocket not connected');
     }
+  }
+
+  handleReceivedMessage(message) {
+    const receivedMessage = JSON.parse(message.body);
+    console.log('Received message:', receivedMessage);
+    this.listeners.forEach(callback => callback(receivedMessage));
   }
 
   disconnect() {
