@@ -8,9 +8,7 @@ export default function JoinRoomModal({
   onClose, 
   roomCode, 
   onRoomCodeChange, 
-  onEnter,
-  playerName,
-  onPlayerNameChange
+  onEnter
 }) {
   return (
     <Modal
@@ -22,24 +20,14 @@ export default function JoinRoomModal({
       <View style={styles.modalOverlay}>
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>Join Room</Text>
-          <Text style={styles.modalSubtitle}>Enter your name and room code</Text>
+          <Text style={styles.modalSubtitle}>Enter room code</Text>
           
           <TextInput
             style={styles.modalInput}
-            placeholder="Enter your name"
-            placeholderTextColor="#f7e6b7"
-            value={playerName}
-            onChangeText={onPlayerNameChange}
-          />
-
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Enter code"
+            placeholder="Enter your Code"
             placeholderTextColor="#f7e6b7"
             value={roomCode}
-            onChangeText={text => onRoomCodeChange(text.replace(/[^0-9]/g, '').slice(0, 6))}
-            keyboardType="numeric"
-            maxLength={6}
+            onChangeText={onRoomCodeChange}
           />
           
           <View style={styles.modalButtonRow}>
@@ -52,10 +40,10 @@ export default function JoinRoomModal({
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.enterButton, 
-                (roomCode.length !== 6 || !playerName.trim()) && { opacity: 0.5 }]}
+                (roomCode.length !== 6) && { opacity: 0.5 }]}
               onPress={onEnter}
               activeOpacity={0.8}
-              disabled={roomCode.length !== 6 || !playerName.trim()}
+              disabled={roomCode.length !== 6}
             >
               <Text style={styles.modalButtonText}>Enter</Text>
             </TouchableOpacity>

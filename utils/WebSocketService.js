@@ -17,13 +17,13 @@ class WebSocketService {
       onConnect: () => {
         console.log('WebSocket connected successfully');
         this.connected = true;
-        // Subscribe to public topic
+        // Subscribe to room-specific topic with room code as payload
+        console.log('Subscribing to room topic with code:', code);
         this.stompClient.subscribe("/topic/room." + code, (message) => {
           const receivedMessage = JSON.parse(message.body);
           console.log('Received message:', receivedMessage);
           this.listeners.forEach(callback => callback(receivedMessage));
         });
-
         if (onConnect) onConnect();
       },
       onStompError: (frame) => {
@@ -40,11 +40,12 @@ class WebSocketService {
     this.stompClient.activate();
   }
 
-  sendMessage(message, destination = WS_CHAT_SEND) {
+  sendMessage(message, endpoint = WS_CHAT_SEND) {
+    const destination = `${WS_APP_PREFIX}${endpoint}`;
     if (this.connected && this.stompClient) {
-      console.log('Sending message to:', `${WS_APP_PREFIX}${destination}`, message);
+      console.log('Sending message to:', destination, message);
       this.stompClient.publish({
-        destination: `${WS_APP_PREFIX}${destination}`,
+        destination: destination,
         body: JSON.stringify(message)
       });
     } else {

@@ -1,12 +1,14 @@
 import wsService from '../utils/WebSocketService';
 import { API_ENDPOINTS } from '../config/server';
 import { Alert } from 'react-native';
-import { getAuthTokens } from '../utils/auth';
+import { getAuthTokens, getUser } from '../utils/auth';
+import { WS_CREATE_ROOM, WS_JOIN_ROOM } from '../config/server';
 
 export const handleCreateRoom = async (setState) => {
   try {
     // Check if user is authenticated
     const tokens = await getAuthTokens();
+    console.log('Retrieved tokens:', tokens);
     if (!tokens?.accessToken) {
       console.log('User not authenticated, showing login modal');
       setState(prev => ({ ...prev, showLoginModal: true }));
@@ -23,7 +25,7 @@ export const handleCreateRoom = async (setState) => {
     });
     
     if (!response.ok) {
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 403) {
         // Token expired or invalid
         setState(prev => ({ ...prev, showLoginModal: true }));
         return;
@@ -41,11 +43,11 @@ export const handleCreateRoom = async (setState) => {
       code,
       () => {
         wsService.sendMessage({
-          type: 'JOIN',
+          eventType: 'CREATE_ROOM',
           from: createdBy,
           code: code,
-          text: `${createdBy} created room ${code}!`
-        });
+          authToken: tokens.accessToken
+        }, WS_CREATE_ROOM);
         setState(prev => ({ ...prev, waiting: true }));
         // Subscribe to messages
         setState(prev => ({ 
@@ -93,12 +95,22 @@ export const handleModalCancel = (setState) => {
   }));
 };
 
-export const handleModalEnter = async (setState) => {
+export const handleModalEnter = async (setState, currentState) => {
   try {
-    const { playerName, roomCode } = setState(prev => prev);
+    const { roomCode } = currentState;
+    const userData = await getUser();
+    const playerName = userData?.username;
     
-    if (!playerName.trim()) {
-      Alert.alert('Error', 'Please enter your name');
+    console.log('Player name:', playerName, ' and Room code:', roomCode);
+    
+    if (!playerName || !playerName.trim()) {
+      console.log('Player name is empty. Login in first');
+      setState(prev => ({ ...prev, showLoginModal: true }));
+      return;
+    }
+
+    if (!roomCode || !roomCode.trim()) {
+      Alert.alert('Error', 'Please enter a room code');
       return;
     }
 
@@ -116,11 +128,10 @@ export const handleModalEnter = async (setState) => {
       roomCode,
       () => {
         wsService.sendMessage({
-          type: 'JOIN',
+          eventType: 'JOIN_ROOM',
           from: playerName,
-          code: roomCode,
-          text: `${playerName} joined room ${roomCode}!`
-        });
+          code: roomCode
+        }, WS_JOIN_ROOM);
         setState(prev => ({
           ...prev,
           isModalVisible: false,

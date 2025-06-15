@@ -54,7 +54,7 @@ export default function OnlineMultiplayerScreen() {
     setState(prev => ({ ...prev, showLoginModal: false }));
     // Retry the last action that required authentication
     if (state.isModalVisible) {
-      handleModalEnter(setState);
+      handleModalEnter(setState, state);
     } else {
       handleCreateRoom(setState);
     }
@@ -98,9 +98,7 @@ export default function OnlineMultiplayerScreen() {
         onClose={() => handleModalCancel(setState)}
         roomCode={state.roomCode}
         onRoomCodeChange={(text) => setState(prev => ({ ...prev, roomCode: text }))}
-        onEnter={() => handleModalEnter(setState)}
-        playerName={state.playerName}
-        onPlayerNameChange={(text) => setState(prev => ({ ...prev, playerName: text }))}
+        onEnter={() => handleModalEnter(setState, state)}
       />
 
       <ErrorModal
