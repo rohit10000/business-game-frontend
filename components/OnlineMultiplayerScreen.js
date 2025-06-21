@@ -6,6 +6,11 @@ import wsService from '../utils/WebSocketService';
 import JoinRoomModal from './utils/modals/JoinRoomModal';
 import ErrorModal from './utils/modals/ErrorModal';
 import LoginModal from './utils/modals/LoginModal';
+import { useGame, useGameActions } from '../utils/GameContext';
+import { PLAYER_COLORS } from '../utils/gameTypes';
+import { getUser } from '../utils/auth';
+import GameScreen from './GameScreen';
+
 import { 
   handleCreateRoom,
   handleJoinRoom,
@@ -29,6 +34,10 @@ export default function OnlineMultiplayerScreen() {
   const unsubscribeRef = useRef(null);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  
+  // Game context
+  const { gameState, roomId } = useGame();
+  const gameActions = useGameActions();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -50,26 +59,111 @@ export default function OnlineMultiplayerScreen() {
     }
   }, [isFocused]);
 
+  // Handle WebSocket messages and update game state
+  const handleWebSocketMessage = (message) => {
+    console.log('Handling WebSocket message:', message);
+    
+    // Update the UI message
+    const displayMessage = message.text || message.content || message.message || JSON.stringify(message);
+    setState(prev => ({ ...prev, wsMessage: displayMessage }));
+    
+    // Handle different message types
+    if (message.eventType) {
+      switch (message.eventType) {
+        case 'PLAYER_JOINED':
+        case 'JOIN_ROOM':
+        case 'ROOM_CREATED':
+        case 'CREATE_ROOM':
+        case 'LEAVE_ROOM':
+          handlePlayersJoined(message);
+          break;
+        case 'PLAYER_LEFT':
+          handlePlayerLeft(message);
+          break;
+        case 'GAME_STARTED':
+          handleGameStarted(message);
+          break;
+        default:
+          console.log('Unhandled message type:', message.eventType);
+      }
+    }
+  };
+
+  const handlePlayersJoined = (message) => {
+    console.log('Player joined:', message);
+    if (message.players) {
+      addPlayersToGameState(message.players);
+    }
+  };
+
+  const handlePlayerLeft = (message) => {   
+    console.log('Player left:', message);
+    // Find and remove player from game state
+    const player = gameState.players.find(p => p.username === message.from);
+    if (player) {
+      gameActions.removePlayer(player.id);
+    }
+  };
+
+  const handleRoomCreated = (message) => {
+    console.log('Room created:', message);
+    if (message.code) {
+      // Set the room ID in game state and update local state
+      gameActions.startGame(message.code);
+      setState(prev => ({ ...prev, roomCode: message.code }));
+    }
+  };
+
+  const handleGameStarted = (message) => {
+    console.log('Game started:', message);
+    // Navigate to game screen or update game status
+    gameActions.setGameStatus('IN_PROGRESS');
+  };
+  
+  const addPlayersToGameState = (players) => {
+    // Add player to game state
+    console.log('Adding players to game state:', players);
+    gameActions.addPlayers(players);
+  };
+
   const handleLoginSuccess = (userData) => {
     setState(prev => ({ ...prev, showLoginModal: false }));
     // Retry the last action that required authentication
     if (state.isModalVisible) {
-      handleModalEnter(setState, state);
+      handleModalEnter(setState, state, handleWebSocketMessage);
     } else {
-      handleCreateRoom(setState);
+      handleCreateRoom(setState, handleWebSocketMessage);
     }
   };
 
+  // Add current user to game state when they create or join a room
+  // useEffect(() => {
+  //   if (state.waiting && gameState.players.length === 0) {
+  //     // Get current user and add them to game state
+  //     const addCurrentUser = async () => {
+  //       try {
+  //         const userData = await getUser();
+  //         if (userData?.username) {
+  //           addPlayerToGameState(userData.username, state.roomCode || 'unknown');
+  //         }
+  //       } catch (error) {
+  //         console.error('Error getting current user:', error);
+  //       }
+  //     };
+  //     addCurrentUser();
+  //   }
+  // }, [state.waiting]);
+
   // Waiting screen UI
   if (state.waiting) {
-    return <WaitingScreen message={state.wsMessage} />;
+    return <WaitingScreen />;
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          onPress={() => handleCreateRoom(setState)}
+          onPress={() => handleCreateRoom(setState, handleWebSocketMessage)}
           style={styles.button}
           activeOpacity={0.7}
         >
@@ -98,7 +192,7 @@ export default function OnlineMultiplayerScreen() {
         onClose={() => handleModalCancel(setState)}
         roomCode={state.roomCode}
         onRoomCodeChange={(text) => setState(prev => ({ ...prev, roomCode: text }))}
-        onEnter={() => handleModalEnter(setState, state)}
+        onEnter={() => handleModalEnter(setState, state, handleWebSocketMessage)}
       />
 
       <ErrorModal

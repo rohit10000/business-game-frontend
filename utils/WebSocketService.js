@@ -1,6 +1,7 @@
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
-import { WS_SERVER_URL, WS_APP_PREFIX, WS_CHAT_SEND, WS_CHAT_ADD_USER } from '../config/server';
+import { WS_SERVER_URL, WS_APP_PREFIX, WS_CHAT_SEND, WS_CHAT_ADD_USER, WS_LEAVE_ROOM } from '../config/server';
+import { getAuthTokens, getUser } from '../utils/auth';
 
 class WebSocketService {
   constructor() {
@@ -60,6 +61,10 @@ class WebSocketService {
   disconnect() {
     if (this.stompClient) {
       console.log('Disconnecting WebSocket');
+      this.sendMessage({
+        roomCode: this.currentRoomCode,
+        authToken: getAuthTokens().accessToken
+      }, WS_LEAVE_ROOM);
       this.stompClient.deactivate();
       this.stompClient = null;
       this.connected = false;

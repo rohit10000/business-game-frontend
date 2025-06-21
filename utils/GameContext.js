@@ -120,6 +120,10 @@ export const useGameActions = () => {
   
   return {
     // Player actions
+    addPlayers: (players) => 
+      dispatch(gameActions.addPlayers(players)),
+
+    // Player actions
     addPlayer: (username, currentRoomId, color) => 
       dispatch(gameActions.addPlayer(username, currentRoomId, color)),
     

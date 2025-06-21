@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import { getAuthTokens, getUser } from '../utils/auth';
 import { WS_CREATE_ROOM, WS_JOIN_ROOM } from '../config/server';
 
-export const handleCreateRoom = async (setState) => {
+export const handleCreateRoom = async (setState, messageHandler = null) => {
   try {
     // Check if user is authenticated
     const tokens = await getAuthTokens();
@@ -26,6 +26,7 @@ export const handleCreateRoom = async (setState) => {
     
     if (!response.ok) {
       if (response.status === 401 || response.status === 403) {
+        console.log('Token expired or invalid, showing login modal');
         // Token expired or invalid
         setState(prev => ({ ...prev, showLoginModal: true }));
         return;
@@ -48,13 +49,13 @@ export const handleCreateRoom = async (setState) => {
           code: code,
           authToken: tokens.accessToken
         }, WS_CREATE_ROOM);
-        setState(prev => ({ ...prev, waiting: true }));
-        // Subscribe to messages
+        setState(prev => ({ ...prev, waiting: true, roomCode: code }));
+        // Subscribe to messages with custom handler if provided
         setState(prev => ({ 
           ...prev, 
-          unsubscribeRef: wsService.subscribe((msg) => 
+          unsubscribeRef: wsService.subscribe(messageHandler || ((msg) => 
             setState(prev => ({ ...prev, wsMessage: msg.text }))
-          )
+          ))
         }));
       },
       () => {
@@ -95,7 +96,7 @@ export const handleModalCancel = (setState) => {
   }));
 };
 
-export const handleModalEnter = async (setState, currentState) => {
+export const handleModalEnter = async (setState, currentState, messageHandler = null) => {
   try {
     const { roomCode } = currentState;
     const userData = await getUser();
@@ -135,15 +136,15 @@ export const handleModalEnter = async (setState, currentState) => {
         setState(prev => ({
           ...prev,
           isModalVisible: false,
-          roomCode: '',
+          roomCode: roomCode, // Keep the room code for reference
           waiting: true
         }));
-        // Subscribe to messages
+        // Subscribe to messages with custom handler if provided
         setState(prev => ({ 
           ...prev, 
-          unsubscribeRef: wsService.subscribe((msg) => 
+          unsubscribeRef: wsService.subscribe(messageHandler || ((msg) => 
             setState(prev => ({ ...prev, wsMessage: msg.text }))
-          )
+          ))
         }));
       },
       () => {
@@ -183,4 +184,4 @@ export const handlePlayRandom = async (setState) => {
     console.error('Error checking authentication:', error);
     setState(prev => ({ ...prev, errorModalVisible: true }));
   }
-}; 
+};

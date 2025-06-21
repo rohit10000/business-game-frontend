@@ -29,6 +29,15 @@ export const gameReducer = (state, action) => {
       };
     }
 
+    case GAME_ACTIONS.ADD_PLAYERS: {
+      const { players } = action.payload;
+      return {
+        ...state,
+        players: [...players],
+        lastAction: action.type
+      };
+    }
+
     case GAME_ACTIONS.REMOVE_PLAYER: {
       const { playerId } = action.payload;
       return {
@@ -167,6 +176,11 @@ export const gameActions = {
   addPlayer: (username, currentRoomId = null, color = null) => ({
     type: GAME_ACTIONS.ADD_PLAYER,
     payload: { username, currentRoomId, color }
+  }),
+
+  addPlayers: (players) => ({
+    type: GAME_ACTIONS.ADD_PLAYERS,
+    payload: { players }
   }),
 
   removePlayer: (playerId) => ({

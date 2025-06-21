@@ -236,6 +236,43 @@ For support and questions:
 - Check the documentation
 - Review the code comments
 
+## Recent Updates
+
+### Player Management in Multiplayer Rooms
+
+The app now automatically adds players to the game state when they join or create rooms:
+
+#### Features Added:
+1. **Automatic Player Addition**: When users join or create rooms via WebSocket, they are automatically added to the game state
+2. **Player Display**: The waiting screen now shows all players who have joined the room with their assigned colors
+3. **Color Assignment**: Players are automatically assigned colors from the available color palette
+4. **Host Identification**: The first player (room creator) is marked as HOST
+5. **Real-time Updates**: Player list updates in real-time as players join or leave
+
+#### How It Works:
+1. When a user creates a room, they are added to the game state as the first player
+2. When other users join the room via WebSocket, they receive messages and are added to the game state
+3. Each player gets a unique color assigned automatically
+4. The waiting screen displays all players with their colors and host status
+5. WebSocket messages are handled to update the game state appropriately
+
+#### Files Modified:
+- `components/OnlineMultiplayerScreen.js` - Added game state integration and message handling
+- `components/WaitingScreen.js` - Added player list display
+- `handlers/onlineMultiplayerHandlers.js` - Updated to support custom message handlers
+- `utils/WebSocketService.js` - Enhanced message handling (existing)
+- `utils/GameContext.js` - Game state management (existing)
+
+#### WebSocket Message Handling:
+The system now handles various WebSocket message types:
+- `PLAYER_JOINED` / `JOIN_ROOM` - Adds new players to game state
+- `PLAYER_LEFT` - Removes players from game state  
+- `ROOM_CREATED` / `CREATE_ROOM` - Sets up room in game state
+- `GAME_STARTED` - Updates game status
+
+#### Usage:
+Players are automatically managed - no manual intervention required. Simply create or join a room and the game state will be updated automatically with all participants.
+
 ---
 
 **Note**: This is a restructured and improved version of the original project with better organization, cleaner code, and enhanced functionality. 
