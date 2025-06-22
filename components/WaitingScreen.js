@@ -94,19 +94,6 @@ export default function WaitingScreen() {
         </View>
       )}
 
-      {/* Game Settings Section */}
-      {gameSettings && Object.keys(gameSettings).length > 0 && (
-        <View style={styles.gameSettingsSection}>
-          <Text style={styles.sectionTitle}>Game Settings</Text>
-          {Object.entries(gameSettings).map(([key, value], index) => (
-            <View key={`setting-${key}-${index}`} style={styles.statusRow}>
-              <Text style={styles.statusLabel}>{key}:</Text>
-              <Text style={styles.statusValue}>{String(value)}</Text>
-            </View>
-          ))}
-        </View>
-      )}
-
       {/* Waiting Message */}
       {players.length === 0 && (
         <Text style={styles.emptyMessage}>

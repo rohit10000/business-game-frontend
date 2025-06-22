@@ -130,9 +130,9 @@ export default function OnlineMultiplayerScreen() {
     setState(prev => ({ ...prev, showLoginModal: false }));
     // Retry the last action that required authentication
     if (state.isModalVisible) {
-      handleModalEnter(setState, state, handleWebSocketMessage);
+      handleModalEnter(setState, state, handleWebSocketMessage, gameActions);
     } else {
-      handleCreateRoom(setState, handleWebSocketMessage);
+      handleCreateRoom(setState, handleWebSocketMessage, gameActions);
     }
   };
 
@@ -163,7 +163,7 @@ export default function OnlineMultiplayerScreen() {
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          onPress={() => handleCreateRoom(setState, handleWebSocketMessage)}
+          onPress={() => handleCreateRoom(setState, handleWebSocketMessage, gameActions)}
           style={styles.button}
           activeOpacity={0.7}
         >
@@ -192,7 +192,7 @@ export default function OnlineMultiplayerScreen() {
         onClose={() => handleModalCancel(setState)}
         roomCode={state.roomCode}
         onRoomCodeChange={(text) => setState(prev => ({ ...prev, roomCode: text }))}
-        onEnter={() => handleModalEnter(setState, state, handleWebSocketMessage)}
+        onEnter={() => handleModalEnter(setState, state, handleWebSocketMessage, gameActions)}
       />
 
       <ErrorModal

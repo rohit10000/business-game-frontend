@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import { getAuthTokens, getUser } from '../utils/auth';
 import { WS_CREATE_ROOM, WS_JOIN_ROOM } from '../config/server';
 
-export const handleCreateRoom = async (setState, messageHandler = null) => {
+export const handleCreateRoom = async (setState, messageHandler = null, gameActions = null) => {
   try {
     // Check if user is authenticated
     const tokens = await getAuthTokens();
@@ -50,6 +50,12 @@ export const handleCreateRoom = async (setState, messageHandler = null) => {
           authToken: tokens.accessToken
         }, WS_CREATE_ROOM);
         setState(prev => ({ ...prev, waiting: true, roomCode: code }));
+        
+        // Set room code in game state
+        if (gameActions) {
+          gameActions.startGame(code);
+        }
+        
         // Subscribe to messages with custom handler if provided
         setState(prev => ({ 
           ...prev, 
@@ -96,7 +102,7 @@ export const handleModalCancel = (setState) => {
   }));
 };
 
-export const handleModalEnter = async (setState, currentState, messageHandler = null) => {
+export const handleModalEnter = async (setState, currentState, messageHandler = null, gameActions = null) => {
   try {
     const { roomCode } = currentState;
     const userData = await getUser();
@@ -139,6 +145,12 @@ export const handleModalEnter = async (setState, currentState, messageHandler = 
           roomCode: roomCode, // Keep the room code for reference
           waiting: true
         }));
+        
+        // Set room code in game state
+        if (gameActions) {
+          gameActions.startGame(roomCode);
+        }
+        
         // Subscribe to messages with custom handler if provided
         setState(prev => ({ 
           ...prev, 

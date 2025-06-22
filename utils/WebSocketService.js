@@ -8,11 +8,13 @@ class WebSocketService {
     this.stompClient = null;
     this.connected = false;
     this.listeners = [];
+    this.currentRoomCode = null;
   }
 
   connect(username, code, onConnect, onError, onClose) {
     console.log('Connecting to WebSocket:', WS_SERVER_URL);
     const socket = new SockJS(WS_SERVER_URL);
+    this.currentRoomCode = code; // Store the room code for later use
     this.stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -58,16 +60,34 @@ class WebSocketService {
     this.listeners.forEach(callback => callback(receivedMessage));
   }
 
-  disconnect() {
+  async disconnect() {
     if (this.stompClient) {
       console.log('Disconnecting WebSocket');
-      this.sendMessage({
-        roomCode: this.currentRoomCode,
-        authToken: getAuthTokens().accessToken
-      }, WS_LEAVE_ROOM);
+      // Send leave room message if we have a room code
+      const tokens = await getAuthTokens();
+      console.log("token is ", tokens)
+      if (this.currentRoomCode && tokens) {
+        try {
+          
+          if (tokens?.accessToken) {
+            this.sendMessage({
+              code: this.currentRoomCode,
+              authToken: tokens.accessToken
+            }, WS_LEAVE_ROOM);
+          }
+        } catch (error) {
+          console.warn('Error sending leave room message:', error);
+        }
+      }
+      
+      // Clean up listeners
+      this.listeners = [];
+      
+      // Deactivate connection
       this.stompClient.deactivate();
       this.stompClient = null;
       this.connected = false;
+      this.currentRoomCode = null;
     }
   }
 
