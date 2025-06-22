@@ -18,4 +18,5 @@ export const API_ENDPOINTS = {
   REGISTER: `${SERVER_URL}/api/auth/register`,
   CREATE_ROOM: `${SERVER_URL}/api/rooms/create`,
   JOIN_ROOM: `${SERVER_URL}/api/rooms/join`,
+  GET_ROOM: (code) => `${SERVER_URL}/api/rooms/${code}`
 };

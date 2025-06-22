@@ -129,6 +129,30 @@ export const handleModalEnter = async (setState, currentState, messageHandler = 
       return;
     }
 
+    const response = await fetch(API_ENDPOINTS.GET_ROOM(roomCode), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${tokens.accessToken}`
+      }
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        console.log('Token expired or invalid, showing login modal');
+        // Token expired or invalid
+        setState(prev => ({ ...prev, showLoginModal: true }));
+        return;
+      }
+      console.log(response);
+      throw new Error('Failed to Join room');
+    }
+    
+    const { found } = await response.json();
+    if (!found) {
+      throw new Error('Room doesnot exists');
+    }
+
     // Try to connect to WebSocket using wsService
     wsService.connect(
       playerName,
