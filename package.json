@@ -6,26 +6,49 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "type-check": "echo 'TypeScript not configured yet'",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "clean": "expo r -c",
+    "postinstall": "echo 'Installation complete. Run npm run lint to check code quality.'"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/blur": "^4.4.1",
     "@react-navigation/native": "^7.1.5",
     "@react-navigation/native-stack": "^7.3.9",
     "@stomp/stompjs": "^7.1.1",
-    "expo": "^53.0.11",
+    "expo": "53.0.19",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
-    "react-native": "^0.79.3",
+    "react-native": "0.79.5",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "react-dom": "19.0.0",
+    "react-native-web": "^0.20.0",
+    "@expo/metro-runtime": "~5.0.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@babel/eslint-parser": "^7.22.0",
+    "@babel/preset-react": "^7.22.0",
+    "@react-native-community/eslint-config": "^3.2.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-native": "^4.1.0",
+    "prettier": "^3.0.0",
+    "jest": "^29.6.0"
   },
   "private": true
 }

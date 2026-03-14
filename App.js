@@ -2,12 +2,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import LandingScreen from './components/LandingScreen';
-import HomeScreen from './components/HomeScreen';
-import OnlineMultiplayerScreen from './components/OnlineMultiplayerScreen';
-import ComputerScreen from './components/ComputerScreen';
-import GameScreen from './components/GameScreen';
-import { GameProvider } from './utils/GameContext';
+import LandingScreen from './src/screens/LandingScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import OnlineMultiplayerScreen from './src/screens/OnlineMultiplayerScreen';
+import ComputerScreen from './src/screens/ComputerScreen';
+import GameScreen from './src/screens/GameScreen';
+import { GameProvider } from './src/services/game/GameContext';
 
 const Stack = createNativeStackNavigator();
 
