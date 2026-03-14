@@ -150,7 +150,7 @@ export const handleModalEnter = async (setState, currentState, messageHandler = 
     
     const { found } = await response.json();
     if (!found) {
-      throw new Error('Room doesnot exists');
+      throw new Error('Room does not exist');
     }
 
     // Try to connect to WebSocket using wsService
