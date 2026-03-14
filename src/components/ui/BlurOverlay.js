@@ -1,11 +1,19 @@
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+
+let BlurView = null;
+if (Platform.OS === 'ios') {
+  try {
+    BlurView = require('@react-native-community/blur').BlurView;
+  } catch (e) {
+    // BlurView not available, will use fallback
+  }
+}
 
 const BlurOverlay = ({ visible }) => {
   if (!visible) return null;
 
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' && BlurView) {
     return (
       <BlurView
         style={StyleSheet.absoluteFill}
@@ -15,7 +23,7 @@ const BlurOverlay = ({ visible }) => {
     );
   }
 
-  // Fallback for Android and Web
+  // Fallback for Android and Web (or iOS without blur package)
   return (
     <View
       style={[

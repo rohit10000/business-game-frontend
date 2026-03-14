@@ -35,7 +35,8 @@
     "sockjs-client": "^1.6.1",
     "react-dom": "19.0.0",
     "react-native-web": "^0.20.0",
-    "@expo/metro-runtime": "~5.0.5"
+    "@expo/metro-runtime": "~5.0.5",
+    "expo-blur": "~14.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
