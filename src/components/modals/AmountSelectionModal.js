@@ -26,7 +26,7 @@ const AmountSelectionModal = ({ visible, onClose, onNext }) => {
                 style={styles.selectedAmount}
                 onPress={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <Text style={styles.amountText}>{selectedAmount}</Text>
+                <Text style={styles.amountText}>{selectedAmount} Notes</Text>
                 <Ionicons 
                   name={isDropdownOpen ? "chevron-up" : "chevron-down"} 
                   size={24} 
@@ -48,7 +48,7 @@ const AmountSelectionModal = ({ visible, onClose, onNext }) => {
                         setIsDropdownOpen(false);
                       }}
                     >
-                      <Text style={styles.amountText}>{amount}</Text>
+                      <Text style={styles.amountText}>{amount} Notes</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>

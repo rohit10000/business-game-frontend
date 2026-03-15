@@ -42,7 +42,7 @@ const ComputerScreen = ({ route }) => {
 
           <View style={styles.infoItem}>
             <Text style={styles.label}>Starting Amount:</Text>
-            <Text style={styles.value}>₹{startingAmount.toLocaleString()}</Text>
+            <Text style={styles.value}>{startingAmount.toLocaleString('en-IN')} Notes</Text>
           </View>
         </View>
       </View>

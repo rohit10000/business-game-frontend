@@ -10,12 +10,10 @@ export const generateRoomCode = () => {
 };
 
 export const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return `${new Intl.NumberFormat('en-IN', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(amount)} Notes`;
 };
 
 export const formatTime = (seconds) => {
